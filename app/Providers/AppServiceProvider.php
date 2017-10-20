@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Support\CurrencyClient\Resources\FixerIOResource;
+use App\Support\CurrencyClient\Resources\ResourcesInterface;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(ResourcesInterface::class, function($app)
+        {
+            return new FixerIOResource();
+        });
     }
 }
