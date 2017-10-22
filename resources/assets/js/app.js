@@ -14,77 +14,115 @@ require('select2');
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
-
-$(function () {
-    var oldCalculation = {};
-    var calculation = {};
-    $('[name="from"], [name="to"]').select2({
-        theme: 'bootstrap'
-    });
-    $("[data-calculator-form]").validate({
-        rules: {
-            amount: {
-                required: true,
-                number: true
-            }
+CalculatorController = {
+    fields: {
+        from: '[name="from"]',
+        to: '[name="to"]',
+        amount: '[name="amount"]',
+        result: '[name="result"]'
+    },
+    buttons: {
+        invert: '[data-invert]',
+        calculate: '[data-calculate]'
+    },
+    templates: {
+        history: {
+            body: '[data-template-table]',
+            row: '[data-template-row]',
+        },
+        alert: '[data-alert-template]'
+    },
+    oldCalculation: {},
+    calculation: {},
+    calculatorForm: '[data-calculator-form]',
+    historyTableBody: '[data-history-body]',
+    alertWrap: '[data-alert]',
+    calculatorUrl: '/api/calculate',
+    historyCount: 5,
+    calculatorValidationRules: {
+        amount: {
+            required: true,
+            number: true
         }
-    });
-    function calculate() {
+    },
+    historyTableWrap: '[data-table-wrap]',
+
+    init: function () {
+        this.initActions();
+        $([this.fields.from, this.fields.to].join()).select2({
+            theme: 'bootstrap'
+        });
+        $(this.calculatorForm).validate({
+            rules: this.calculatorValidationRules
+        });
+
+    },
+    initActions: function () {
+        var $this = this;
+        $(this.buttons.calculate).on('click', function () {
+            $this.calculate();
+        });
+        $(this.buttons.invert).on('click', function () {
+            $this.invertCurrency();
+        });
+    },
+    calculate: function () {
+        var $this = this;
         var pending;
-        if (!pending && $('form').valid()) {
+        if (!pending && $(this.calculatorForm).valid()) {
             pending = true;
             $.ajax({
                 type: 'GET',
-                url: '/api/calculate',
-                data: $('form').serialize(),
+                dataType: 'json',
+                url: this.calculatorUrl,
+                data: $(this.calculatorForm).serialize(),
             }).done(function (res) {
-                $('[name="result"]').val(res);
-                setHistory();
+                $($this.fields.result).val(res);
+                $this.setHistory();
                 pending = false;
-            }).fail(function () {
-                alert('fail');
+            }).fail(function (err) {
+                $($this.alertWrap).loadTemplate(
+                    $($this.templates.alert),
+                    {
+                        message: err.responseJSON
+                    }
+                );
                 pending = false;
             });
         }
-    }
-
-    function setHistory() {
-        setLayout();
-        calculation = {
-            from: $('[name="from"]').val(),
-            amount: $('[name="amount"]').val(),
-            result: $('[name="result"]').val(),
-            to: $('[name="to"]').val(),
+    },
+    setHistory: function () {
+        this.setLayout();
+        this.calculation = {
+            from: $(this.fields.from).val(),
+            amount: $(this.fields.amount).val(),
+            result: $(this.fields.result).val(),
+            to: $(this.fields.to).val()
         };
-        if(JSON.stringify(oldCalculation) !== JSON.stringify(calculation)){
-            $('[data-history-body]').loadTemplate(
-                $('#template-row'),
-                calculation,
+        if (JSON.stringify(this.oldCalculation) !== JSON.stringify(this.calculation)) {
+            $(this.historyTableBody).loadTemplate(
+                $(this.templates.history.row),
+                this.calculation,
                 {
                     append: true
                 }
             );
-            oldCalculation = calculation;
+            this.oldCalculation = this.calculation;
         }
 
-        if ($('[data-history-body] tr').length > 5) {
-            $('[data-history-body] tr').first().remove();
+        if ($(this.historyTableBody + ' tr').length > this.historyCount) {
+            $(this.historyTableBody + ' tr').first().remove();
+        }
+    },
+    invertCurrency: function () {
+        var from = $(this.fields.from).val();
+        $(this.fields.from).val($(this.fields.to).val()).trigger('change');
+        $(this.fields.to).val(from).trigger('change');
+    },
+    setLayout: function () {
+        if ($(this.historyTableWrap).children().length == 0) {
+            $(this.historyTableWrap).loadTemplate(
+                $(this.templates.history.body));
         }
     }
-
-    function setLayout() {
-        if ($('[data-table-wrap]').children().length == 0) {
-            $('[data-table-wrap]').loadTemplate(
-                $('#template-table'));
-        }
-    }
-
-    $('[data-calculate]').on('click', function () {
-        calculate();
-    });
-    $('[data-invert]').on('click', function () {
-        var from = $('[name="from"]').val();
-        $('[name="from"]').val($('[name="to"]').val()).trigger('change');
-        $('[name="to"]').val(from).trigger('change');
-    });
-});
+};

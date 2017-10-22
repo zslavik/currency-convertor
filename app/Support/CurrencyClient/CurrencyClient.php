@@ -4,6 +4,7 @@ namespace App\Support\CurrencyClient;
 
 use App\Support\CurrencyClient\Resources\ResourcesInterface;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 
 class CurrencyClient
 {
@@ -16,9 +17,16 @@ class CurrencyClient
         $this->httpClient = new Client();
     }
 
-    public function request(){ //todo add try catch
-        $res = $this->httpClient->get($this->resource->getUrl());
-        return $this->resource->getResponse($res->getBody());
+    public function request()
+    {
+        try {
+            $res = $this->httpClient->get($this->resource->getUrl());
+            return $this->resource->getResponse($res->getBody());
+        } catch (\Exception $e) {
+            Log::error('Currency client: ' . json_encode($e->getMessage()));
+            return false;
+        }
+
     }
 
 }

@@ -1,15 +1,29 @@
-
 // Fonts
 @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
-
 // Variables
 @import "variables";
-
 // Bootstrap
 @import "~bootstrap-sass/assets/stylesheets/bootstrap";
 @import "~select2/src/scss/core.scss";
 @import "~select2-bootstrap-theme/src/select2-bootstrap.scss";
 
-.error{
+.error {
   color: red;
 }
+
+html, body {
+  background-color: #fff;
+  height: 100vh;
+}
+
+.wrap {
+  height: 100vh;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.calculator {
+  margin-bottom: 100px;
+}
+

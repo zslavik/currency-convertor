@@ -7,12 +7,15 @@ use App\Currency;
 use App\CurrencySymbol;
 use App\Rate;
 use App\Support\CurrencyClient\CurrencyClient;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class CurrencyService
 {
     private $currencyClient;
     private $currencySymbolsService;
+    private $response;
 
     public function __construct(CurrencyClient $currencyClient,
                                 CurrencySymbolsService $currencySymbolsService)
@@ -65,6 +68,21 @@ class CurrencyService
             Cache::put('rates', $rates, 60);
         }
         return $rates;
+    }
+
+    public function calculate(Request $request)
+    {
+        $rates = $this->getLast();
+        try {
+            $this->response = CurrencySymbol::BASE_SYMBOL == $request->from
+                ? $request->amount : ($request->amount / $rates[$request->from]);
+            $this->response = CurrencySymbol::BASE_SYMBOL == $request->to
+                ? $this->response : ($this->response * $rates[$request->to]);
+            return round($this->response, 4);
+        } catch (\Exception $e) {
+            Log::error('Calculate: ' . $e->getMessage());
+            return false;
+        }
     }
 
 }

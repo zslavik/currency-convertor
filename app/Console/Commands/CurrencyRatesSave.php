@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Services\CurrencyService;
-use App\Services\CurrencySymbolsService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class CurrencyRatesSave extends Command
@@ -43,5 +43,6 @@ class CurrencyRatesSave extends Command
     {
         Log::info($this->description);
         $this->currencyService->save();
+        Cache::forget('rates');
     }
 }

@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
     <!-- Styles -->
 </head>
-<body>
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -23,60 +22,70 @@
         </div>
     </div>
 </nav>
+<div class="wrap full-height flex-center">
+    <div class="calculator ">
+        <div class="container">
+            <div data-alert></div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div data-table-wrap></div>
+                    <form data-calculator-form>
+                        <div class="row">
+                            <div class="col-xs-12 col-lg-2">
+                                <div class="form-group">
+                                    <select class="form-control" name="from">
+                                        @foreach($symbols as $symbol)
+                                            <option>{{$symbol}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-lg-3">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Amount" name="amount">
+                                </div>
+                            </div>
 
-<div class="container">
-    <div class="row">
-        <div class="col-xs-12">
-            <div data-table-wrap></div>
-            <form data-calculator-form>
-                <div class="form-group">
-                    <label for="usr">Amount:</label>
-                    <input type="text" class="form-control" name="amount">
-                </div>
-                <div class="row">
-                    <div class="col-xs-5">
-                        <div class="form-group">
-                            <label>From:</label>
-                            <select class="form-control" name="from">
-                                @foreach($symbols as $symbol)
-                                    <option>{{$symbol}}</option>
-                                @endforeach
-                            </select>
+                            <div class="col-xs-12 col-lg-1 text-center">
+                                <div class="form-group">
+                                    <button type="button" data-invert class="btn btn-default"><span
+                                                class="glyphicon glyphicon-retweet"
+                                                aria-hidden="true"></span></button>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-lg-2">
+                                <div class="form-group">
+                                    <select class="form-control" name="to">
+                                        @foreach($symbols as $symbol)
+                                            <option>{{$symbol}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-lg-3">
+                                <div class="form-group">
+                                    <input disabled type="text" placeholder="Result" class="form-control" name="result">
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-lg-1 text-center">
+                                <button type="button" data-calculate class="btn btn-default">
+                                    Calculate
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-xs-2">
-                        <label>Switch</label>
-                        <button type="button" data-invert class="form-control btn btn-default"><span
-                                    class="glyphicon glyphicon-retweet"
-                                    aria-hidden="true"></span></button>
-                    </div>
-                    <div class="col-xs-5">
-                        <div class="form-group">
-                            <label>To:</label>
-                            <select class="form-control" name="to">
-                                @foreach($symbols as $symbol)
-                                    <option>{{$symbol}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label for="usr">Result:</label>
-                    <input disabled type="text" class="form-control" name="result">
-                </div>
-                <button type="button" data-calculate class="btn btn-default">
-                    Calculate
-                </button>
-            </form>
+            </div>
         </div>
     </div>
 </div>
 
-<script src="{{ mix('/js/app.js') }}"></script>
-<div id="target"></div>
 
-<script id="template-row" type="text/html">
+<script src="{{ mix('/js/app.js') }}"></script>
+<script>
+    CalculatorController.init();
+</script>
+<script data-template-row type="text/html">
     <tr>
         <td><span data-content="from"></span></td>
         <td><span data-content="amount"></span></td>
@@ -84,7 +93,13 @@
         <td><span data-content="to"></span></td>
     </tr>
 </script>
-<script id="template-table" type="text/html">
+<script data-alert-template type="text/html">
+    <div class="alert alert-danger alert-dismissable">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <span data-content="message"></span>
+    </div>
+</script>
+<script data-template-table type="text/html">
     <table class="table table-striped">
         <thead>
         <tr>
