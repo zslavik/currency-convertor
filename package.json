@@ -17,5 +17,11 @@
         "laravel-mix": "^1.0",
         "lodash": "^4.17.4",
         "vue": "^2.1.10"
+    },
+    "dependencies": {
+        "jquery-validation": "^1.17.0",
+        "jquery.loadtemplate": "^1.5.10",
+        "select2": "^4.0.4",
+        "select2-bootstrap-theme": "0.1.0-beta.10"
     }
 }

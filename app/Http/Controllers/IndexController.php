@@ -11,7 +11,6 @@ class IndexController extends Controller
 {
     private $currencyService;
     private $currencySymbolsService;
-    private $response;
 
     public function __construct(CurrencyService $currencyService,
                                 CurrencySymbolsService $currencySymbolsService)
@@ -25,12 +24,5 @@ class IndexController extends Controller
         return view('index.index', [
             'symbols' => $this->currencySymbolsService->allNames()
         ]);
-    }
-
-    public function calculate(Request $request) //todo add form request
-    {
-        $rates = $this->currencyService->getLast();
-        $this->response == CurrencySymbol::BASE_SYMBOL ? $request->amount : ($request->amount / $rates[$request->from]);
-        return response()->json(CurrencySymbol::BASE_SYMBOL ? $this->response : ($this->response * $rates[$request->to]));
     }
 }

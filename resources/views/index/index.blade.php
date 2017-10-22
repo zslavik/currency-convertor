@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Laravel</title>
 
@@ -11,71 +12,6 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
     <!-- Styles -->
-    <style>
-        html, body {
-            background-color: #fff;
-            color: #636b6f;
-            font-family: 'Raleway', sans-serif;
-            font-weight: 100;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .full-height {
-            height: 100vh;
-        }
-
-        .flex-center {
-            align-items: center;
-            display: flex;
-            justify-content: center;
-        }
-
-        .position-ref {
-            position: relative;
-        }
-
-        .top-right {
-            position: absolute;
-            right: 10px;
-            top: 18px;
-        }
-
-        .content {
-            text-align: center;
-        }
-
-        .title {
-            font-size: 84px;
-        }
-
-        .links > a {
-            color: #636b6f;
-            padding: 0 25px;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: .1rem;
-            text-decoration: none;
-            text-transform: uppercase;
-        }
-
-        .m-b-md {
-            margin-bottom: 30px;
-        }
-
-        .vertical-center {
-            min-height: 100%; /* Fallback for browsers do NOT support vh unit */
-            min-height: 100vh; /* These two lines are counted as one :-)       */
-
-            display: flex;
-            align-items: center;
-        }
-
-        .vertical-align {
-            display: flex;
-            align-items: center;
-        }
-    </style>
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -89,6 +25,66 @@
 </nav>
 
 <div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <div data-table-wrap></div>
+            <form data-calculator-form>
+                <div class="form-group">
+                    <label for="usr">Amount:</label>
+                    <input type="text" class="form-control" name="amount">
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <div class="form-group">
+                            <label>From:</label>
+                            <select class="form-control" name="from">
+                                @foreach($symbols as $symbol)
+                                    <option>{{$symbol}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-xs-2">
+                        <label>Switch</label>
+                        <button type="button" data-invert class="form-control btn btn-default"><span
+                                    class="glyphicon glyphicon-retweet"
+                                    aria-hidden="true"></span></button>
+                    </div>
+                    <div class="col-xs-5">
+                        <div class="form-group">
+                            <label>To:</label>
+                            <select class="form-control" name="to">
+                                @foreach($symbols as $symbol)
+                                    <option>{{$symbol}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="usr">Result:</label>
+                    <input disabled type="text" class="form-control" name="result">
+                </div>
+                <button type="button" data-calculate class="btn btn-default">
+                    Calculate
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="{{ mix('/js/app.js') }}"></script>
+<div id="target"></div>
+
+<script id="template-row" type="text/html">
+    <tr>
+        <td><span data-content="from"></span></td>
+        <td><span data-content="amount"></span></td>
+        <td><span data-content="result"></span></td>
+        <td><span data-content="to"></span></td>
+    </tr>
+</script>
+<script id="template-table" type="text/html">
     <table class="table table-striped">
         <thead>
         <tr>
@@ -98,44 +94,8 @@
             <th>Currency out</th>
         </tr>
         </thead>
-        <tbody>
-        <tr>
-            <td>UAH</td>
-            <td>10</td>
-            <td>270</td>
-            <td>USD</td>
-        </tr>
-        </tbody>
+        <tbody data-history-body></tbody>
     </table>
-    <div class="form-group">
-        <label for="usr">Amount:</label>
-        <input type="text" class="form-control" id="usr">
-    </div>
-    <div class="form-group">
-
-        <label for="sel1">given:</label>
-        <select class="form-control" id="sel1">
-            @foreach($symbols as $symbol)
-                <option>{{$symbol}}</option>
-            @endforeach
-        </select>
-    </div>
-    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon glyphicon-retweet"
-                                                        aria-hidden="true"></span></button>
-    <div class="form-group">
-        <label for="sel1">desired:</label>
-        <select class="form-control" id="sel1">
-            @foreach($symbols as $symbol)
-                <option>{{$symbol}}</option>
-            @endforeach
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="usr">Amount:</label>
-        <input disabled type="text" class="form-control" id="usr">
-    </div>
-</div>
-
-<script src="{{ mix('/js/app.js') }}"></script>
+</script>
 </body>
 </html>
